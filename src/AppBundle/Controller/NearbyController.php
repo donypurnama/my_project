@@ -1,8 +1,9 @@
 <?php
+
 namespace AppBundle\Controller;
 
 
-use AppBundle\Entity\Todo;
+use AppBundle\Entity\Nearby;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\Request;
@@ -19,20 +20,36 @@ class NearbyController extends Controller
     /**
      * @Route("/nearby", name="nearby_list")
      */
-    public function listAction()
+    public function listAction(Request $request)
     {
-        $todo = new Todo;
-        $form = $this->createFormBuilder($todo)
-        ->add('name', TextType::class, array('attr' => array('class' => 'form-control', 'style' => 'margin-bottom:15px')))
+        $nearby= new Nearby;
+        $form = $this->createFormBuilder($nearby)
+        ->add('city', TextType::class, array('attr' => array('class' => 'form-control', 'style' => 'margin-bottom:15px')))
         ->add('save', SubmitType::class, array('label' => 'Search Now', 'attr' => array('class' => 'btn btn-primary', 'style' => 'margin-bottom:15px')))
         ->getForm();
 
         $form->handleRequest($request);
+
         if($form->isSubmitted() && $form->isValid()) 
         {
+            // get data
+            $city = $form['city']->getData();
+            die($city);
 
-            die("search");
-            //get data
+
+            $em = $this->getDoctrine()->getManager();
+            $nearby = $em->getRepository('AppBundle:Nearby')
+                         ->
+                         ->find($id);
+
+
+            $nearby->setName(city);
+
+            return $this->render('nearby/search.html.twig', array(
+                'city' => $city,
+            ));
+
+
         }
 
         return $this->render('nearby/index.html.twig', array(
